@@ -75,11 +75,11 @@
   <header id="header" class="fixed-top">
     <div class="container d-flex align-items-center">
 
-      <h1 class="logo mr-auto"><a href="index.html"> PhrisFoo TCM</a></h1>
+      <h1 class="logo mr-auto"><a href="index.php"> PhrisFoo TCM</a></h1>
 
       <nav class="nav-menu d-none d-lg-block">
         <ul>
-          <li class="active"><a href="index.html">Home</a></li>
+          <li class="active"><a href="index.php">Home</a></li>
           <li><a href="#doctors">Practitioners</a></li>
           <li><a href="#services">Treatments</a></li>
           <li><a href="#location">Locate Us</a></li>
@@ -87,7 +87,7 @@
       </nav>
       <!--nav-menu -->
 
-      <a href="appointment.html" class="appointment-btn scrollto">Make an Appointment</a>
+      <a href="appointment.php" class="appointment-btn scrollto">Make an Appointment</a>
 
     </div>
   </header>
@@ -320,7 +320,7 @@
   <!-- FOOTER -->
   <script>
     $(function(){
-      $("#footer").load("footer.html");
+      $("#footer").load("footer.php");
     });
 
   </script>
@@ -381,7 +381,7 @@
                 </div>
                 <br>
                 <div class="appointment d-flex justify-content-start">
-                  <a href="appointment.html?practid=${practitioner_id}" class="appointment-btn ml-0">Make Appointment</a>                
+                  <a href="appointment.php?practid=${practitioner_id}" class="appointment-btn ml-0">Make Appointment</a>                
                 </div>
               </div>
             </div>`

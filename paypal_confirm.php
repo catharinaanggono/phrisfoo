@@ -35,7 +35,7 @@ var x = setInterval(function() {
   // If the count down is over, write some text 
   if (distance < 0) {
     clearInterval(x);
-    document.body.innerHTML = "This payment window has expired. " + '<a href="./appointment.html">Return to booking page</a>';
+    document.body.innerHTML = "This payment window has expired. " + '<a href="./appointment.php">Return to booking page</a>';
   }
 }, 1000);
     </script>
@@ -51,7 +51,7 @@ var x = setInterval(function() {
       request.onreadystatechange = function(){
         if (this.status == 400){
           localStorage.someoneBooked = 1
-          window.location.replace("appointment.html")
+          window.location.replace("appointment.php")
         }
         
       }
@@ -124,10 +124,10 @@ var x = setInterval(function() {
               if(request.status == 200 && request.readyState == 4){
                 var response = JSON.parse(this.responseText)
                 if (response.code == 201){
-                  window.location.replace('booking_confirmed.html')
+                  window.location.replace('booking_confirmed.php')
                 }
                 else{
-                  window.location.replace('booking_failed.html')
+                  window.location.replace('booking_failed.php')
                 }
               }
             }

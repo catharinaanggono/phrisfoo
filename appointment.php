@@ -86,14 +86,14 @@
   <header id="header" class="fixed-top">
     <div class="container d-flex align-items-center">
 
-      <h1 class="logo mr-auto"><a href="index.html">PhrisFoo TCM</a></h1>
+      <h1 class="logo mr-auto"><a href="index.php">PhrisFoo TCM</a></h1>
 
       <nav class="nav-menu d-none d-lg-block">
         <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="index.html#doctors">Practitioners</a></li>
-          <li><a href="index.html#services">Treatments</a></li>
-          <li><a href="index.html#location">Locate Us</a></li>
+          <li><a href="index.php">Home</a></li>
+          <li><a href="index.php#doctors">Practitioners</a></li>
+          <li><a href="index.php#services">Treatments</a></li>
+          <li><a href="index.php#location">Locate Us</a></li>
         </ul>
       </nav>
     </div>
@@ -225,7 +225,7 @@
     });
 
     $(function(){
-      $("#footer").load("footer.html");
+      $("#footer").load("footer.php");
     });
   </script>
 
@@ -479,7 +479,7 @@
       localStorage.problem = reason
       localStorage.dt = new Date();
 
-      window.location.href = 'paypal_confirm.html'
+      window.location.href = 'paypal_confirm.php'
     }
     
   }

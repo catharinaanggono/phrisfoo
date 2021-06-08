@@ -40,7 +40,7 @@
   ======================================================== -->
   <script>
     if (localStorage.id > 0){
-      window.location.replace('doctor_appt.html')
+      window.location.replace('doctor_appt.php')
     }
   </script>
 </head>
@@ -140,7 +140,7 @@
             var status = JSON.parse(this.responseText).code;
             if(status == 201){
               localStorage.setItem("id", id);
-              window.location.href = "doctor_appt.html"
+              window.location.href = "doctor_appt.php"
 
             }
           }
