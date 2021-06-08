@@ -1,0 +1,203 @@
+version: "3.8"
+
+volumes:
+  rabbitmq_data:
+
+services:
+  
+  #####################################
+  # rabbitmq: The messaging broker
+  #####################################
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: esd-rabbit
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  #####################################
+  # Patient: The Patient Microservice
+  #####################################
+  patient:
+    build:
+      context: ./
+      dockerfile: patient.Dockerfile
+    image: wellsonah2019/patient:1.0
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      dbURL: mysql+mysqlconnector://PhrisFooTCM@host.docker.internal:3306/tcm_patient
+      PYTHONUNBUFFERED: 1
+
+
+  ###############################################
+  # Practitioner: The Practitioner Microservice
+  ###############################################
+  practitioner:
+    build:
+      context: ./
+      dockerfile: practitioner.Dockerfile
+    image: wellsonah2019/practitioner:1.0
+    restart: always
+    ports:
+      - "5001:5001"
+    environment:
+      dbURL: mysql+mysqlconnector://PhrisFooTCM@host.docker.internal:3306/tcm_practitioner
+      PYTHONUNBUFFERED: 1
+
+  ##########################################################
+  # Practitioner Unavailable Schedule Microservice -- Documented as one service with practitioner
+  ##########################################################
+  practitioner_unavailable_schedule:
+    build:
+      context: ./
+      dockerfile: practitioner_unavailable_schedule.Dockerfile
+    image: wellsonah2019/practitioner_unavailable_schedule:1.0
+    restart: always
+    ports:
+      - "5002:5002"
+    environment:
+      dbURL: mysql+mysqlconnector://PhrisFooTCM@host.docker.internal:3306/tcm_practitioner
+      PYTHONUNBUFFERED: 1
+
+
+  #####################################
+  # Booking: The Booking Microservice
+  #####################################
+  booking:
+    build:
+      context: ./
+      dockerfile: booking.Dockerfile
+    image: wellsonah2019/booking:1.0
+    restart: always
+    ports:
+      - "5003:5003"
+    environment:
+      dbURL: mysql+mysqlconnector://PhrisFooTCM@host.docker.internal:3306/tcm_booking
+      PYTHONUNBUFFERED: 1
+
+
+  ##########################################
+  # Treatment: The Treatment Microservice
+  ##########################################
+
+  treatment:
+    build:
+      context: ./
+      dockerfile: treatment.Dockerfile
+    image: wellsonah2019/treatment:1.0
+    restart: always
+    ports:
+      - "5004:5004"
+    environment:
+      dbURL: mysql+mysqlconnector://PhrisFooTCM@host.docker.internal:3306/tcm_treatment
+      PYTHONUNBUFFERED: 1
+
+
+  ##########################################
+  # Flaskmail: The Emailing Microservice
+  ##########################################
+
+  flaskmail:
+    build:
+      context: ./
+      dockerfile: flaskmail.Dockerfile
+    image: wellsonah2019/flaskmail:1.0
+    restart: always
+    ports:
+      - "5005:5005"
+    environment:
+      PYTHONUNBUFFERED: 1
+
+
+
+
+
+  ####################################################################
+  # Practitioner_complex: The complex microservice for practitioners
+  ####################################################################
+
+  practitioner_complex:
+    build:
+      context: ./
+      dockerfile: practitioner_complex.Dockerfile
+    image: wellsonah2019/practitioner_complex:1.0
+    restart: always
+    ports:
+      - "5111:5111"
+    environment:
+      practitioner_url: http://host.docker.internal:5001/practitioner
+      practitioner_language_url: http://host.docker.internal:5001/practitioner-language/
+      practitioner_degree_url: http://host.docker.internal:5001/practitioner-degree/
+      PYTHONUNBUFFERED: 1
+
+  ###################################################################
+  # Place_booking: Complex microservice to place booking
+  ###################################################################
+  place_booking:
+    build:
+      context: ./
+      dockerfile: place_booking.Dockerfile
+    image: wellsonah.2019/place_booking:1.0
+    ports:
+      - "5100:5100"
+    depends_on:
+      - patient
+      - practitioner
+      - practitioner_unavailable_schedule
+      - booking
+      - flaskmail
+      - rabbitmq
+      - activity_log
+      - error_log
+    restart: always
+    environment:
+      patient_booking_url: http://host.docker.internal:5003/patient_booking 
+      patient_url: http://host.docker.internal:5000/patient 
+      past_treatment_url: http://host.docker.internal:5000/patient_treatment  
+      practitioner_unavailable_schedule_url: http://host.docker.internal:5002/unavailable-schedule  
+      booking_url: http://host.docker.internal:5003/booking  
+      email_url: http://host.docker.internal:5005/email
+      practitioner_url: http://host.docker.internal:5001/practitioner
+      rabbit_host: host.docker.internal
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1
+
+
+  ####################################################################
+  # Activity_Log: The microservice to log activities
+  ####################################################################
+  activity_log:
+    build:
+      context: ./
+      dockerfile: activity_log.Dockerfile
+    image: wellsonah2019/activity_log:esd
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      dbURL: mysql+mysqlconnector://PhrisFooTCM@host.docker.internal:3306/tcm_activity_log
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1 
+
+  ####################################################################
+  # Error_log: The microservice to log errors
+  ####################################################################
+  error_log:
+    build:
+      context: ./
+      dockerfile: error.Dockerfile
+    image: wellsonah2019/error_log:1.0
+    restart: always
+    depends_on: 
+      - rabbitmq
+    environment:
+      dbURL: mysql+mysqlconnector://PhrisFooTCM@host.docker.internal:3306/tcm_error_log
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1
